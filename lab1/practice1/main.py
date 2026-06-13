@@ -1,13 +1,37 @@
 from fastapi import FastAPI
+from models import temp_bd
 
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-    return "Hello, [username]"
+@app.get("/workouts")
+def workouts_list():
+    return temp_bd
 
 
-# @app.get("/items/{item_id}")
-# def read_item(item_id: int, q: str | None = None):
-#     return {"item_id": item_id, "q": q}
+@app.get("/workout/{workout_id}")
+def workout_list(workout_id: int):
+    return [workout for workout in temp_bd if workout.get("id") == workout_id]
+
+
+@app.post("/workout")
+def workout_add(workout: dict):
+    temp_bd.append(workout)
+    return {"status": 200, "data": workout}
+
+
+@app.delete("/workout/delete{workout_id}")
+def workout_delete(workout_id: int):
+    for i, workout in enumerate(temp_bd):
+        if workout.get("id") == workout_id:
+            temp_bd.pop(i)
+            break
+    return {"status": 201, "message": "deleted"}
+
+
+@app.put("/workout{workout_id}")
+def warrior_update(workout_id: int, workout: dict):
+    for i, work in enumerate(temp_bd):
+        if work.get("id") == workout_id:
+            temp_bd[i] = workout
+    return temp_bd
